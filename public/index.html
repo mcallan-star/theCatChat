@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Time Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }
+        #messages { list-style-type: none; padding: 0; width: 300px; }
+        #messages li { padding: 5px; border-bottom: 1px solid #ddd; }
+        #form { display: flex; width: 300px; margin-top: 10px; }
+        #input { flex: 1; padding: 5px; }
+        #send { padding: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Real Time Chat</h1>
+    <ul id="messages"></ul>
+
+    <form id="form">
+        <input id="input" autocomplete="off" placeholder="Say something funny. . ." />
+        <!-- Updated button types -->
+        <button id="send" type="submit">Send it!</button>  <!-- this is a submit button -->
+        
+    </form>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script>
+    <script>  //in-line script, which is a simple way to add JavaScript to get the Socket.io client library and connect to the server.
+        const socket = io(':3000');  //connect to the internet address of the server
+        
+        // Elements
+        const messages = document.getElementById('messages');
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const send = document.getElementById('send');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (input.value) {
+                socket.emit('chat message', input.value);
+                input.value = '';
+            }
+        });
+
+        socket.on('chat message', function(msg) {
+            const item = document.createElement('li');
+            item.textContent = msg;
+
+            // Create Reply button
+            const replyBtn = document.createElement('button');
+            replyBtn.textContent = 'Reply';
+            replyBtn.addEventListener('click', function () {
+                input.value = `Replying to "${msg}": `;
+                input.focus();  //puts cursor back to input field
+            })
+               // Create Remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove';
+            removeBtn.addEventListener('click', function () {
+                messages.removeChild(item);
+            });
+
+              // Create Emoji Reaction button
+            const reactBtn = document.createElement('button');
+            reactBtn.textContent = 'React 😊';
+            reactBtn.addEventListener('click', function () {
+                const emoji = prompt('React with an emoji:');
+                if (emoji) {
+                    const emojiSpan = document.createElement('span');
+                    emojiSpan.textContent = ` ${emoji}`;
+                    item.appendChild(emojiSpan);
+                }
+            });
+
+            // Append buttons to the message
+            item.appendChild(replyBtn);
+            item.appendChild(removeBtn);
+            item.appendChild(reactBtn);
+
+
+
+            // add messages to the list
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+    </script>
+</body>
+</html>
