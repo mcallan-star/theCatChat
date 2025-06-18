@@ -27,7 +27,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script>
     <script>  //in-line script, which is a simple way to add JavaScript to get the Socket.io client library and connect to the server.
-        const socket = io(':3000');  //connect to the internet address of the server
+        const socket = io();  // connect to the same host and port serving the page
         
         // Elements
         const messages = document.getElementById('messages');
